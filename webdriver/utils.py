@@ -3,10 +3,12 @@ from contextlib import contextmanager
 from sys import platform
 from enum import Enum, auto
 
+
 class OS(Enum):
     WINDOWS = auto()
     LINUX = auto()
     MACOS = auto()
+
 
 def get_os():
     if platform == "linux" or platform == "linux2":
@@ -15,6 +17,7 @@ def get_os():
         return OS.MACOS
     elif platform == "win32":
         return OS.WINDOWS
+
 
 def get_path_delimiter():
     operating_system = get_os()

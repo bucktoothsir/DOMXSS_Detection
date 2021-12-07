@@ -46,6 +46,15 @@ class WebDriver():
             if retry > 0:
                 self.get(url, retry-1)
     
+    def get_html(self, url, retry=3):
+        """
+        Get HTML of the URL
+        """
+        self.get(url, retry=retry)
+        html = self.driver.page_source
+        return html
+
+
     def find_tag(self, value, retry=3):
         """
         Find elements by value of tag name

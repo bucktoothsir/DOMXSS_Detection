@@ -151,4 +151,5 @@ class DomXSSDetector():
         return False
     
     def scan_by_reg(self, url):
+        html = self.webdriver.get_html(url)
         pass

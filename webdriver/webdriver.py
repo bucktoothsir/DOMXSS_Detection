@@ -9,7 +9,7 @@
 """
 
 """
-#from .utils import add_drivers_to_path
+from time import sleep
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import *
@@ -36,15 +36,15 @@ class WebDriver():
         """
         try:
             self.driver.get(url)
-        except InvalidSessionIdException as err:
+        except InvalidSessionIdException:
             # pause and retry
             try:
                 sleep(100)
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 pass
             if (retry >= 0):
                 self.get(url, retry-1)
-        except TimeoutException as err:
+        except TimeoutException:
             if retry > 0:
                 self.get(url, retry-1)
 
@@ -62,22 +62,22 @@ class WebDriver():
         """
         try:
             return self.driver.find_elements(By.TAG_NAME, value)
-        except InvalidSessionIdException as err:
+        except InvalidSessionIdException:
             # pause and retry
             try:
                 sleep(100)
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 pass
             if (retry >= 0):
                 return self.find_tag(value, retry-1)
-        except TimeoutException as err:
+        except TimeoutException:
             if retry > 0:
                 return self.find_tag(value, retry-1)
 
     def get_alert_text(self):
         try:
-            alert_dialog = driver.switch_to.alert
-            alert_text = alertDialog.text
+            alert_dialog = self.driver.switch_to.alert
+            alert_text = alert_dialog.text
             alert_dialog.accept()
             return alert_text
         except NoAlertPresentException:

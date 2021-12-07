@@ -146,7 +146,7 @@ class DomXSSDetector():
     def scan_by_payload(self, url, attack_vecotrs=list()):
         if not attack_vecotrs:
             attack_vecotrs = self._attack_vecotrs
-        for i, attack_vector in enumerate(attack_vecotrs):
+        for i, attack_vector in enumerate(attack_vecotrs)
             print('Scan by %d attack_vecotr' % i)
             url += attack_vector
             result = self._scan_helper(url, attack_vector)

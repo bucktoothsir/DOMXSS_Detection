@@ -1,2 +1,7 @@
 # DomXSS_Detection
-Detect Dom-XSS based on static method.
+Static Dom XSS detector.
+
+#Usage
+`python domxss_detect.py http://www.google.com --rule reg`
+
+

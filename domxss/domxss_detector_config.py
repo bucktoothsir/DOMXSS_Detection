@@ -43,3 +43,5 @@ ATTACK_VECTORS = [
     HASH_HASH_ALERT,
     HASH_HASH_IMG_ALERT,
 ]
+#for vector in ATTACK_VECTORS:
+#    print(vector)

@@ -22,7 +22,7 @@ class DomXSSDetector():
         self._unlikely_str = UNLIKELY_STR
         self._attack_vecotrs = [ATTACK_VECTORS[0]]
 
-    def _alert_helper(url, attack_vector, tag_name='', attribute_id='', attribute_name=''):
+    def _alert_helper(self, url, attack_vector, tag_name='', attribute_id='', attribute_name=''):
         alert_text = self.webdriver.get_alert_text()
         if alert_text == self.UNLIKELY_STR:
             dom_alert_info = DomAlertInfo(
@@ -31,10 +31,10 @@ class DomXSSDetector():
         else:
             return None
 
-    def _scan_helper(self, url, attack_vector):
+    def _payload_scan_helper(self, url, attack_vector):
         try:
             self.webdriver.get(url)
-        except UnexpectedAlertPresentException as e:
+        except UnexpectedAlertPresentException:
             dom_alert_info = self._alert_helper(url, attack_vector)
             if dom_alert_info:
                 return dom_alert_info
@@ -47,7 +47,7 @@ class DomXSSDetector():
             buttion_elements = self.webdriver.find_tag('button')
             if buttion_elements:
                 possible_domxss_triggers.extend(buttion_elements)
-        except UnexpectedAlertPresentException as e:
+        except UnexpectedAlertPresentException:
             dom_alert_info = self._alert_helper(url, attack_vector)
             self.vulnerable = True
             if dom_alert_info:
@@ -68,17 +68,17 @@ class DomXSSDetector():
                 if tag_name == 'input':
                     possible_domxss_trigger.send_keys(attack_vector)
                 possible_domxss_trigger.click()
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
                     return dom_alert_info
-            except (StaleElementReferenceException, ElementNotInteractableException, ElementClickInterceptedException) as e:
+            except (StaleElementReferenceException, ElementNotInteractableException, ElementClickInterceptedException):
                 pass
 
             try:
                 self.webdriver.get(url)
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
@@ -92,7 +92,7 @@ class DomXSSDetector():
                 button_elements = self.webdriver.find_tag('button')
                 if buttion_elements:
                     possible_domxss_triggers.extend(button_elements)
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
@@ -100,7 +100,7 @@ class DomXSSDetector():
 
         try:
             all_elements = self.webdriver.find_tag('div')
-        except UnexpectedAlertPresentException as e:
+        except UnexpectedAlertPresentException:
             dom_alert_info = self._alert_helper(
                 url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
             if dom_alert_info:
@@ -119,16 +119,16 @@ class DomXSSDetector():
                 pass
             try:
                 element.click()
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
                     return dom_alert_info
-            except (ElementClickInterceptedException, ElementNotInteractableException, StaleElementReferenceException) as e:
+            except (ElementClickInterceptedException, ElementNotInteractableException, StaleElementReferenceException):
                 pass
             try:
                 self.webdriver.get(url)
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
@@ -136,7 +136,7 @@ class DomXSSDetector():
 
             try:
                 all_elements = self.webdriver.find_tag('div')
-            except UnexpectedAlertPresentException as e:
+            except UnexpectedAlertPresentException:
                 dom_alert_info = self._alert_helper(
                     url, attack_vector, tag_name=tag_name, attribute_id=attribute_id, attribute_name=attribute_name)
                 if dom_alert_info:
@@ -146,10 +146,10 @@ class DomXSSDetector():
     def scan_by_payload(self, url, attack_vecotrs=list()):
         if not attack_vecotrs:
             attack_vecotrs = self._attack_vecotrs
-        for i, attack_vector in enumerate(attack_vecotrs)
+        for i, attack_vector in enumerate(attack_vecotrs):
             print('Scan by %d attack_vecotr' % i)
             url += attack_vector
-            result = self._scan_helper(url, attack_vector)
+            result = self._payload_scan_helper(url, attack_vector)
             if result:
                 tag_name = result.get_tag_name()
                 other_info = ''

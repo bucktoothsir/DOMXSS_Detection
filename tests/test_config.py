@@ -11,9 +11,7 @@
 import random
 
 HTTP_SERVER_ADDRESS = 'http://127.0.0.1'
-PORT_START = 60000
-PORT_END = 65536
-PORT = random.randint(PORT_START, PORT_END)
+PORT = 5000
 HTML_FOLDER = 'test/data'
 
 

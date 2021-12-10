@@ -9,12 +9,14 @@
 """
 
 """
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from flask import Flask, make_response, send_from_directory
-from test_config import *
 
 app = Flask(__name__)
 
-@app.route("/data/<filename>")
+@app.route("/<filename>")
 def get_file(filename):
     response = make_response(
             send_from_directory('data', filename)
@@ -23,5 +25,5 @@ def get_file(filename):
 
 
 if __name__ == "__main__":
-    app.run(port=PORT)
+    app.run()
 

@@ -21,7 +21,7 @@ class DomXSSDetector():
         self.webdriver = WebDriver(browser)
         self.vulnerable = False
         self._unlikely_str = UNLIKELY_STR
-        self._attack_vecotrs = [ATTACK_VECTORS[0]]
+        self._attack_vecotrs = ATTACK_VECTORS
 
     def _alert_helper(self, url, attack_vector, tag_name='', attribute_id='', attribute_name=''):
         alert_text = self.webdriver.get_alert_text()

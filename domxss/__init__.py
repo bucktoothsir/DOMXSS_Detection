@@ -11,5 +11,6 @@
 """
 from __future__ import absolute_import
 from .domxss_detector import DomXSSDetector
+from .domxss_detector import DomAlertInfo
 
 __version__ = '1.0.0'

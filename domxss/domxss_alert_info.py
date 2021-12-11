@@ -6,12 +6,9 @@
 #
 # Distributed under terms of the MIT license.
 
-"""
-
-"""
-
 
 class DomAlertInfo():
+
     def __init__(self, url, attack, tag_name='', attribute_id='', attribute_name=''):
         self.url = url
         self.attack = attack

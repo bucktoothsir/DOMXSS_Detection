@@ -6,29 +6,34 @@
 #
 # Distributed under terms of the MIT license.
 
-"""
-
-"""
 from time import sleep
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.common.exceptions import *
+from selenium.webdriver.firefox.options import Options as firefox_options
+from selenium.webdriver.chrome.options import Options as chrome_options
+from selenium.common import exceptions
 from selenium.webdriver.common.by import By
 
 
 class WebDriver():
+    """Class WebDriver is a wrapper of selenium.webdriver.
+    Check more details at https://www.selenium.dev/documentation/webdriver/
+    """
+
     def __init__(self, browser='firefox'):
         self.browser = browser.lower()
         if self.browser == 'firefox':
-            options = Options()
+            options = firefox_options()
             options.add_argument('--headless')
             self.driver = webdriver.Firefox(options=options)
-
-        # other browsers to do
-
+        elif self.browser == 'chrome':
+            options = chrome_options()
+            options.add_argument('--headless')
+            self.driver = webdriver.Chrome(options=options)
         else:
             raise NameError(
-                '%s is not a valid browser name, please input one from blabla', self.browser)
+                    '%s is not a valid browser name'
+                    'please choose one from chrome and firefox',
+                    self.browser)
 
     def get(self, url, retry=3):
         """
@@ -36,7 +41,7 @@ class WebDriver():
         """
         try:
             self.driver.get(url)
-        except InvalidSessionIdException:
+        except exceptions.InvalidSessionIdException:
             # pause and retry
             try:
                 sleep(100)
@@ -44,7 +49,7 @@ class WebDriver():
                 pass
             if (retry >= 0):
                 self.get(url, retry-1)
-        except TimeoutException:
+        except exceptions.TimeoutException:
             if retry > 0:
                 self.get(url, retry-1)
 
@@ -62,7 +67,7 @@ class WebDriver():
         """
         try:
             return self.driver.find_elements(By.TAG_NAME, value)
-        except InvalidSessionIdException:
+        except exceptions.InvalidSessionIdException:
             # pause and retry
             try:
                 sleep(100)
@@ -70,7 +75,7 @@ class WebDriver():
                 pass
             if (retry >= 0):
                 return self.find_tag(value, retry-1)
-        except TimeoutException:
+        except exceptions.TimeoutException:
             if retry > 0:
                 return self.find_tag(value, retry-1)
 
@@ -80,5 +85,5 @@ class WebDriver():
             alert_text = alert_dialog.text
             alert_dialog.accept()
             return alert_text
-        except NoAlertPresentException:
+        except exceptions.NoAlertPresentException:
             return ''

@@ -7,8 +7,9 @@
 # Distributed under terms of the MIT license.
 
 """
-
+Constant Variables used in class DomXSSDetector.
 """
+
 UNLIKELY_INT = 42
 UNLIKELY_STR = str(UNLIKELY_INT)
 POLYGLOT_ALERT = "#jaVasCript:/*-/*`/*\\`/*'/*\"/**/(/* */oNcliCk=alert(" \
@@ -43,5 +44,3 @@ ATTACK_VECTORS = [
     HASH_HASH_ALERT,
     HASH_HASH_IMG_ALERT,
 ]
-#for vector in ATTACK_VECTORS:
-#    print(vector)

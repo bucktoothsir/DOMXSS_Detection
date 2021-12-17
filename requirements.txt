@@ -1,1 +1,3 @@
 selenium==4.1.0
+flask
+pytest

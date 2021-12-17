@@ -200,24 +200,24 @@ class DomXSSDetector():
                 Otherwise, the default attack vectors will be used.
 
         Returns:
-            bool.
-            If the website is vulnerable, return True.
+            bool: If the website is vulnerable, return True.
+            str: Scan result in detail. If the website is not vulnerable, return ''.
         """
         if not attack_vecotrs:
             attack_vecotrs = self._attack_vecotrs
         for i, attack_vector in enumerate(attack_vecotrs):
-            print('Scan by %d attack_vecotr' % i)
+            print('Scan by %d attack_vecotr: %s' % (i+1, attack_vector))
             url += attack_vector
             result = self._payload_scan_helper(url, attack_vector)
             if result:
                 tag_name = result.get_tag_name()
-                other_info = ''
+                scan_info = ''
                 if tag_name:
-                    other_info = 'Tag name: %s, Att name: %s, Att id: %s' % (
+                    scan_info = 'Tag name: %s, Att name: %s, Att id: %s' % (
                         tag_name, result.get_attribute_name, result.get_attribute_id)
-                self.vulnerable = True
-                break
-        return self.vulnerable
+                return True, scan_info
+            else:
+                return False, ''
 
     def _get_domxss_log_helper(self, html, regex):
         """Generate log file for DOMXSS detail information
@@ -227,8 +227,7 @@ class DomXSSDetector():
             html: str, the HTML content parsed from URL
             regex: the regular expression used to compare with the tags in html content
         Returns:
-            str.
-            The detail informaion of potential DOMXSS
+            str: The detail informaion of potential DOMXSS
         """
         try:
             count = [{'pos_start': match.start(),'pos_end':match.end(), 'match':match.group(0)}
@@ -244,7 +243,7 @@ class DomXSSDetector():
                 log_detail = log_detail+ detail_info
             return log_detail
 
-    def scan_by_reg(self, url):
+    def scan_by_reg(self, url, outfile):
         """Scan by regular expression.
         (1) Get the HTML content parsed from the input URL
         (2) Crawl the scripts by using BeautifulSoup
@@ -252,7 +251,7 @@ class DomXSSDetector():
         Args:
             url: str, the concatenation of the url of website and attack vector.
                 eg: https://www.google.com#<script>alert('42')</script>
-            attack_vector: str.
+            outfile: str, the filename that stores the scan results.
         """
         surface_html = self.webdriver.get_html(url)
         all_script_urls = []
@@ -267,7 +266,7 @@ class DomXSSDetector():
             if(script_url[0:4] == 'http'):
                 legit_script_urls.append(script_url)
 
-        with open('domxss_detail.txt', 'w+') as f:
+        with open(outfile, 'w+') as f:
             f.write('This log is for the detail information of the detection result.\n' + 'The information format is <Potential vunlerable tag + Location in the text>\n\n\n')
             f.write('\n\nSourses for URL: ' + url + '\n')
             f.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SOURCES)))
@@ -279,5 +278,4 @@ class DomXSSDetector():
                 f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SOURCES)))
                 f.write('\n\nSinks for URL: ' + http_url + '\n')
                 f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SINKS)))
-        
         

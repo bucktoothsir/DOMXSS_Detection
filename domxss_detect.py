@@ -37,11 +37,11 @@ def main(url, browser, rule, attack_vectors, scan_result_filename):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str, help='Input the url for detection')
-    parser.add_argument('--browser', type=str, nargs='?', default='firefox', help='Browser')
+    parser.add_argument('--browser', type=str, nargs='?', default='firefox', help='Browser name, firefox or chrome')
     parser.add_argument('--rule', type=str, nargs='?', default='payload', help='scan by payload or regular expression')
     parser.add_argument('--payload', type=str, nargs='?', default='', help='Payload to attack the url')
     parser.add_argument('--payload_file', type=str, nargs='?', default='', help='Payload file to attack the url')
-    parser.add_argument('--scan_result_filename', type=str, nargs='?', default='domxss_detail.txt', help='file to store the scan result, only works for scan by regular expression')
+    parser.add_argument('--res_file', type=str, nargs='?', default='domxss_detail.txt', help='file to store the scan result, only works for scan by regular expression')
     args = parser.parse_args()
     attack_vectors = []
     if args.payload:
@@ -52,4 +52,4 @@ if __name__ == "__main__":
                 line = line.strip('\n')
                 attack_vectors.append(line)
     with add_drivers_to_path(os.path.dirname(__file__)):
-        main(args.url, args.browser, args.rule, attack_vectors, args.scan_result_filename)
+        main(args.url, args.browser, args.rule, attack_vectors, args.res_file)

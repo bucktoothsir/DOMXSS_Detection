@@ -9,7 +9,8 @@
 """
 
 """
-
+import os
+from webdriver.utils import add_drivers_to_path
 import argparse
 from domxss import DomXSSDetector
 
@@ -41,4 +42,5 @@ if __name__ == "__main__":
             for line in f:
                 line = line.strip('\n')
                 attack_vectors.append(line)
-    main(args.url, args.browser, args.rule, attack_vectors)
+    with add_drivers_to_path(os.path.dirname(__file__)):
+        main(args.url, args.browser, args.rule, attack_vectors)

@@ -8,12 +8,13 @@
 
 import re
 import time
+from bs4 import BeautifulSoup, SoupStrainer
+from urllib.parse import urljoin
 from selenium.common import exceptions
 from webdriver import WebDriver
 from .domxss_alert_info import DomAlertInfo
 from .domxss_detector_config import UNLIKELY_STR, ATTACK_VECTORS, RE_DOMXSS_SINKS, RE_DOMXSS_SOURCES, SEPERATOR
-from bs4 import BeautifulSoup, SoupStrainer
-from urllib.parse import urljoin
+
 
 
 
@@ -235,11 +236,11 @@ class DomXSSDetector():
         except exceptions.UnexpectedAlertPresentException:
             pass
         finally:
-            log_detail = "Number of found: " + str(len(count)) + "\n" + SEPERATOR
+            log_detail = 'Number of found: ' + str(len(count)) + '\n' + SEPERATOR
             for match in regex.finditer(html):
                 start = match.start()
                 end = match.end()
-                detail_info = "< " + html[start:end] + ", " + str(start) + ":" + str(end) + " > "
+                detail_info = '< ' + html[start:end] + ', ' + str(start) + ':' + str(end) + ' >'
                 log_detail = log_detail+ detail_info
             return log_detail
 
@@ -263,18 +264,20 @@ class DomXSSDetector():
                 src_url = urljoin(str(url), str(src_url))
                 all_script_urls.append(src_url)
         for script_url in all_script_urls:
-            if(script_url[0:4] == "http"):
+            if(script_url[0:4] == 'http'):
                 legit_script_urls.append(script_url)
-        log_detail = open("domxss_detail.txt", "w+")
-        log_detail.write("This log is for the detail information of the detection result.\n" + "The information format is <Potential vunlerable tag + Location in the text>\n\n\n")
-        log_detail.write("\n\nSourses for URL: " + url + "\n")
-        log_detail.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SOURCES)))
-        log_detail.write("\n\nSinks for URL: " + url + "\n")
-        log_detail.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SINKS)))
-        for http_url in legit_script_urls:
-            src_html = self.webdriver.get_html(url)               
-            log_detail.write("\n\nSourses for URL: " + http_url + "\n" )
-            log_detail.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SOURCES)))
-            log_detail.write("\n\nSinks for URL: " + http_url + "\n")
-            log_detail.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SINKS)))
-        log_detail.close()
+
+        with open('domxss_detail.txt', 'w+') as f:
+            f.write('This log is for the detail information of the detection result.\n' + 'The information format is <Potential vunlerable tag + Location in the text>\n\n\n')
+            f.write('\n\nSourses for URL: ' + url + '\n')
+            f.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SOURCES)))
+            f.write('\n\nSinks for URL: ' + url + '\n')
+            f.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SINKS)))
+            for http_url in legit_script_urls:
+                src_html = self.webdriver.get_html(url)               
+                f.write('\n\nSourses for URL: ' + http_url + '\n' )
+                f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SOURCES)))
+                f.write('\n\nSinks for URL: ' + http_url + '\n')
+                f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SINKS)))
+        
+        

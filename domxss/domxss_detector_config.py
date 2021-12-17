@@ -44,3 +44,6 @@ ATTACK_VECTORS = [
     HASH_HASH_ALERT,
     HASH_HASH_IMG_ALERT,
 ]
+RE_DOMXSS_SOURCES = '(location\s*[\[.])|([.\[]\s*["\']?\s*(arguments|dialogArguments|innerHTML|write(ln)?|open(Dialog)?|showModalDialog|cookie|URL|documentURI|baseURI|referrer|name|opener|parent|top|content|self|frames)\W)|(localStorage|sessionStorage|Database)'
+RE_DOMXSS_SINKS = '((src|href|data|location|code|value|action)\s*["\'\]]*\s*\+?\s*=)|((replace|assign|navigate|getResponseHeader|open(Dialog)?|showModalDialog|eval|evaluate|execCommand|execScript|setTimeout|setInterval)\s*["\'\]]*\s*\()'
+SEPERATOR = "-------------------------------------------------------------\n"

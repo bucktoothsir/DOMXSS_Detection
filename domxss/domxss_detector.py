@@ -6,12 +6,16 @@
 #
 # Distributed under terms of the MIT license.
 
-
+import re
 import time
+from bs4 import BeautifulSoup, SoupStrainer
+from urllib.parse import urljoin
 from selenium.common import exceptions
 from webdriver import WebDriver
 from .domxss_alert_info import DomAlertInfo
-from .domxss_detector_config import UNLIKELY_STR, ATTACK_VECTORS
+from .domxss_detector_config import UNLIKELY_STR, ATTACK_VECTORS, RE_DOMXSS_SINKS, RE_DOMXSS_SOURCES, SEPERATOR
+
+
 
 
 class DomXSSDetector():
@@ -215,6 +219,65 @@ class DomXSSDetector():
                 break
         return self.vulnerable
 
+    def _get_domxss_log_helper(self, html, regex):
+        """Generate log file for DOMXSS detail information
+        (1) Count the number of tags matached between input html content and regex
+        (2) Provide the detail information about the potential malicious tags including tag name and location
+        Args:
+            html: str, the HTML content parsed from URL
+            regex: the regular expression used to compare with the tags in html content
+        Returns:
+            str.
+            The detail informaion of potential DOMXSS
+        """
+        try:
+            count = [{'pos_start': match.start(),'pos_end':match.end(), 'match':match.group(0)}
+                for match in regex.finditer(html)]
+        except exceptions.UnexpectedAlertPresentException:
+            pass
+        finally:
+            log_detail = 'Number of found: ' + str(len(count)) + '\n' + SEPERATOR
+            for match in regex.finditer(html):
+                start = match.start()
+                end = match.end()
+                detail_info = '< ' + html[start:end] + ', ' + str(start) + ':' + str(end) + ' >'
+                log_detail = log_detail+ detail_info
+            return log_detail
+
     def scan_by_reg(self, url):
-        html = self.webdriver.get_html(url)
-        pass
+        """Scan by regular expression.
+        (1) Get the HTML content parsed from the input URL
+        (2) Crawl the scripts by using BeautifulSoup
+        (3) Invoking _get_domxss_log_helper(...) to scan both the surface level and source level
+        Args:
+            url: str, the concatenation of the url of website and attack vector.
+                eg: https://www.google.com#<script>alert('42')</script>
+            attack_vector: str.
+        """
+        surface_html = self.webdriver.get_html(url)
+        all_script_urls = []
+        legit_script_urls = []
+        scripts_code = BeautifulSoup(surface_html, 'html.parser', parse_only=SoupStrainer('script'))
+        for tag in scripts_code: 
+            if tag.has_attr('src'): 
+                src_url = tag['src']                      
+                src_url = urljoin(str(url), str(src_url))
+                all_script_urls.append(src_url)
+        for script_url in all_script_urls:
+            if(script_url[0:4] == 'http'):
+                legit_script_urls.append(script_url)
+
+        with open('domxss_detail.txt', 'w+') as f:
+            f.write('This log is for the detail information of the detection result.\n' + 'The information format is <Potential vunlerable tag + Location in the text>\n\n\n')
+            f.write('\n\nSourses for URL: ' + url + '\n')
+            f.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SOURCES)))
+            f.write('\n\nSinks for URL: ' + url + '\n')
+            f.write(self._get_domxss_log_helper(surface_html, re.compile(RE_DOMXSS_SINKS)))
+            for http_url in legit_script_urls:
+                src_html = self.webdriver.get_html(url)               
+                f.write('\n\nSourses for URL: ' + http_url + '\n' )
+                f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SOURCES)))
+                f.write('\n\nSinks for URL: ' + http_url + '\n')
+                f.write(self._get_domxss_log_helper(src_html, re.compile(RE_DOMXSS_SINKS)))
+        
+        

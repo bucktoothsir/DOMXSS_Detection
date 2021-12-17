@@ -1,5 +1,5 @@
 # DOMXSS_Detection
-Static Dom XSS detector.
+Static DOM XSS detector.
 
 ## Setup
 ### Setting up the environment

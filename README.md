@@ -13,7 +13,9 @@ source .env/bin/activate
 ```
 
 ### Installing dependencies
+```shell
 pip3 install -r requirements.txt
+```
 
 ### Download webdriver
 - Firefox: [https://github.com/mozilla/geckodriver/releases](https://github.com/mozilla/geckodriver/releases)

@@ -1,4 +1,4 @@
-# DomXSS_Detection
+# DOMXSS_Detection
 Static Dom XSS detector.
 
 ## Setup
